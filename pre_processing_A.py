@@ -53,9 +53,7 @@ def get_data(task):
     dir_test = "Datasets\dataset_AMLS_22-23_test\celeba_test"
 
     # Get the labels in a dataframe
-    print("labels for training")
     df_labels_train = labels_to_df(dir_train)
-    print("labels for testing")
     df_labels_test = labels_to_df(dir_test)
 
     # get training labels with one-hot_encoding for task A1
@@ -69,9 +67,6 @@ def get_data(task):
     # Get the images
     X_train_images = read_images(dir_train + '\img\\')
     X_test_images = read_images(dir_test + '\img\\')
-
-    print(X_train_images[2])
-    print(X_train_images[2].shape)
 
     Y_train_labels = np.array(Y_train_labels)
     Y_test_labels = np.array(Y_test_labels)
