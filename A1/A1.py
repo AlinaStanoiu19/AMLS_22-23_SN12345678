@@ -1,13 +1,59 @@
-# A1: Gender detection: male or female
-# Celeba Dataset - 5000 images of CelebA set.
-# the labels for the celeba dataset. The first column is the index. 
-# The second column is the corresponding file name. The third column is the gender ({-1, +1}). 
 
 import cv2
 import os
 import numpy as np
 import pandas as pd
+from keras.models import Sequential
+from keras.layers import Conv2D, Dense, Flatten, MaxPooling2D, Dropout
+from sklearn.model_selection import train_test_split
+
+def model_a1(Y_train, Y_test, X_test, X_train, model_name):
+    input_shape = X_train[0].shape
+    print(f"input shape is {input_shape}")
+    model = Sequential()
+    model.add(Conv2D(input_shape=input_shape,activation='relu', filters=32, kernel_size=3, strides=(1, 1)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(filters=64,activation='relu', kernel_size=3, strides=(1, 1)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(filters=128,activation='relu', kernel_size=3, strides=(1, 1)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+    model.add(Dense(128, activation="relu"))
+    model.add(Dropout(0.5))
+    model.add(Dense(1, activation="sigmoid"))
+
+    model.compile(optimizer="adam", loss="binary_crossentropy",
+                metrics=["accuracy"])
+
+    epochs = 12
+    batch_size = 16
+    X_train, X_valid, Y_train, Y_valid = train_test_split(X_train,Y_train, test_size=0.2)
+    print(f'the validation set has {len(Y_valid)} length')
+
+    model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size, verbose=1, validation_data=(X_valid, Y_valid))
+
+    model.save(model_name)
+
+    # Evaluate the model on the test data using `evaluate`
+    print("Evaluate on test data")
+    results = model.evaluate(X_test, Y_test, batch_size=None)
+    print("test loss, test acc:", results)
 
 
-def model_a1():
-    pass
+    y_predictions = np.array(model.predict(X_test, verbose=1, batch_size=10))
+    print(y_predictions[0])
+
+    y_predictions_binary = np.where(y_predictions > 0.5, 1, 0)
+
+    df_predictions = pd.DataFrame(y_predictions)
+    df_predictions_binary = pd.DataFrame(y_predictions_binary)
+    df_predictions.to_csv(model_name + "prediction_float.csv", index=False, header=None)
+    df_predictions_binary.to_csv(model_name + "prediction_binary.csv", index=False, header=None)
+
+    correct_predict = 0
+
+    for i in range(len(y_predictions_binary)):
+        if y_predictions_binary[i] == Y_test[i]:
+            correct_predict += 1
+
+    print(f"accuracy of the prediction for {model_name} is: {correct_predict/len(y_predictions_binary)}")
