@@ -41,14 +41,17 @@ def model_a1(Y_train, Y_test, X_test, X_train, model_name):
 
 
     y_predictions = np.array(model.predict(X_test, verbose=1, batch_size=10))
+
     print(y_predictions[0])
 
     y_predictions_binary = np.where(y_predictions > 0.5, 1, 0)
 
     df_predictions = pd.DataFrame(y_predictions)
     df_predictions_binary = pd.DataFrame(y_predictions_binary)
+
     df_predictions.to_csv(model_name + "prediction_float.csv", index=False, header=None)
     df_predictions_binary.to_csv(model_name + "prediction_binary.csv", index=False, header=None)
+
 
     correct_predict = 0
 
@@ -57,3 +60,5 @@ def model_a1(Y_train, Y_test, X_test, X_train, model_name):
             correct_predict += 1
 
     print(f"accuracy of the prediction for {model_name} is: {correct_predict/len(y_predictions_binary)}")
+
+

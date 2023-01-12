@@ -77,6 +77,7 @@ def read_images(dir, gray_rgb):
 
 def get_data_a(task):
 
+
     # get training and testing labels with one-hot_encoding 
     Y_train_labels, _ = read_labels(DIR_TRAIN, task)
     Y_test_labels,  _= read_labels(DIR_TEST, task)
@@ -84,6 +85,7 @@ def get_data_a(task):
     # Get training and testing images 
     X_train_images, train_images = read_images(DIR_TRAIN + '\img\\','rgb')
     X_test_images, test_images = read_images(DIR_TEST + '\img\\','rgb')
+
 
     Y_train_labels = np.array(Y_train_labels)
     Y_test_labels = np.array(Y_test_labels)

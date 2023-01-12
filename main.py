@@ -8,6 +8,7 @@ import pandas as pd
 import cv2
 import pickle
 
+
 def main():
     X_train_features = []
     X_test_features = []
@@ -51,6 +52,7 @@ def main():
     # model_a2(Y_train_a2, Y_test_a2, X_test_a2, X_train_a2, "smiling")
     # print("TASK A2. SMILE PREDICTION MODEL WITH FEATURES EXTRACTION")
     # model_a(Y_train_a2, Y_test_a2, X_test_features, X_train_features, "smiling")
+
 
 
 if __name__ == "__main__":
