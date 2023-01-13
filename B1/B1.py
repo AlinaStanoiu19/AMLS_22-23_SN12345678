@@ -18,7 +18,7 @@ def model_b1(Y_train, Y_test, X_test, X_train, model_name):
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Flatten())
     model.add(Dense(128, activation="relu"))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.2))
     model.add(Dense(5, activation="softmax"))
 
     model.compile(optimizer="adam", loss="categorical_crossentropy",

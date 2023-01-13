@@ -130,8 +130,8 @@ def get_average_face_center(landmarks_dict, no_faces_list ):
     return sum(remove_no_face)/len(remove_no_face)
 
 
-def face_shape_feature_extraction(gray_images, landmarks_dict, no_faces_list):
-    
+def face_shape_feature_extraction(input_images):
+    _, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(input_images)
     image_names = gray_images.keys()
     features = dict.fromkeys(image_names)
     for img in image_names:
@@ -152,12 +152,13 @@ def face_shape_feature_extraction(gray_images, landmarks_dict, no_faces_list):
     return features
 
 def remove_sunglasses(image):
+    glasses = False
     hist,bin = np.histogram(image.ravel(),256,[0,255]) 
-    for i in range(len(hist)):
+    for i in range(0,30):
+        print(hist[i])
         if hist[i] > 2500:
-            return True
-        else:
-            return False
+            glasses = True
+    return glasses
 
 
 def get_average_side(landmarks_dict, no_faces_list ):
@@ -176,13 +177,13 @@ def get_average_side(landmarks_dict, no_faces_list ):
     # remove_no_face = [i for i in top if i != -1]
     return int(sum(top)/len(top)), int(sum(bottom)/len(bottom)),int(sum(left)/len(left)),int(sum(right)/len(right))
 
-def eye_feature_extraction(images, gray_images, landmarks_dict, no_faces_list):
+def eye_feature_extraction(input_images):
+    images, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(input_images)
     image_names = gray_images.keys()
     features = dict.fromkeys(image_names)
     features_gray = dict.fromkeys(image_names)
     sunglasses_images = []
     for img in image_names:
-        # plt.imshow(gray_images[img],cmap='gray')
         if img in no_faces_list:
             top, bottom, left, right = get_average_side(landmarks_dict, no_faces_list)
         else: 

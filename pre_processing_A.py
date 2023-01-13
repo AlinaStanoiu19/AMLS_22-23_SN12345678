@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from feature_extraction import cartoon_face_detection, face_shape_feature_extraction, eye_feature_extraction
 import pickle
+import matplotlib.pyplot as plt
 
 DIR_TRAIN = "Datasets\dataset_AMLS_22-23\celeba"
 DIR_TEST = "Datasets\dataset_AMLS_22-23_test\celeba_test"
@@ -94,10 +95,15 @@ def get_data_a(task):
 
     return Y_train_labels, Y_test_labels, X_test_images, X_train_images, train_images, test_images
 
+def save_as_pickle(data, file_name):
+    print("write the testing features without glasses to file")
+    outfile_features = open(file_name, 'wb')
+    pickle.dump(data, outfile_features)
+    outfile_features.close()
 
 def get_data_b(task):
 
-    # FEATURE EXTRACTION FOR TASK B2 ------------------------------------------------
+    # READ RAW DATA FOR TASK B ------------------------------------------------
 
     # get training and testing labels 
     Y_train_labels, training_labels = read_labels_cartoons(DIR_TRAIN_B, task)
@@ -113,112 +119,60 @@ def get_data_b(task):
     X_train_images = np.array(X_train_images)
     X_test_images = np.array(X_test_images)
     print("images have been loaded ")
-    # feature extraction for training set ------------------------
-    print("Strat feature extraction for B2 for training data")
-    images, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(train_images)
-    training_features, sunglasses_images = eye_feature_extraction(images, gray_images, landmarks_dict, no_faces_list)
-    # remove outliers with glasses from raw data, feature data and labels
-    Y_train_removed_glasses = []
-    X_train_removed_glasses = []
-    for image in training_labels.keys():
-        if image not in sunglasses_images:
-            Y_train_removed_glasses.append(training_labels[image])
-            X_train_removed_glasses.append(train_images[image])
-    X_train_features = []
-    for image in training_features.keys():
-        if image not in sunglasses_images:
-            X_train_features.append(training_features[image])
 
-    # get the training data with glasses removed and feature exctraction as numpy array 
-    Y_train_removed_glasses = np.array(Y_train_removed_glasses)
-    X_train_removed_glasses = np.array(X_train_removed_glasses)
-    X_train_features = np.array(X_train_features)
+    if task == 'face_shape':
+        # FEATURE EXTRACTION FOR TASK B1 ------------------------------------------------
 
-    print("write the training features without glasses to file")
-    outfile_features = open("x_train_features_removed_glasses_task_b2", 'wb')
-    pickle.dump(X_train_features, outfile_features)
-    outfile_features.close()
+        print("start feature extraction for training set for task b1")
+        features = face_shape_feature_extraction(train_images)
+        X_train_features = np.array([features[k] for k in features.keys()])
 
-    print("write the training labels withou glasses to file")
-    outfile_features = open("x_train_removed_glasses_task_b2", 'wb')
-    pickle.dump(X_train_removed_glasses, outfile_features)
-    outfile_features.close()
+        print("start feature extraction for testing set for task b1 ")
+        features = face_shape_feature_extraction(test_images)
+        X_test_features = np.array([features[k] for k in features.keys()])
 
-    print("write the training labels withou glasses to file")
-    outfile_features = open("y_train_removed_glasses_task_b2", 'wb')
-    pickle.dump(Y_train_removed_glasses, outfile_features)
-    outfile_features.close()
+        return Y_train_labels, X_train_images, X_train_features, Y_test_labels, X_test_images, X_test_features
 
-    print("Strat feature extraction for B2 for testing data")
-    images, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(test_images)
-    testing_features, sunglasses_images = eye_feature_extraction(images, gray_images, landmarks_dict, no_faces_list)
-    # remove outliers with glasses from raw data, feature data and labels
-    Y_test_removed_glasses = []
-    X_test_removed_glasses = []
-    for image in testing_labels.keys():
-        if image not in sunglasses_images:
-            Y_test_removed_glasses.append(testing_labels[image])
-            X_test_removed_glasses.append(test_images[image])
-    X_test_features = []
-    for image in testing_features.keys():
-        if image not in sunglasses_images:
-            X_test_features.append(testing_features[image])
+    elif task == 'eye_color':
+        # FEATURE EXTRACTION FOR TASK B2 ------------------------------------------------
 
-    # get the training data with glasses removed and feature exctraction as numpy array 
-    Y_test_removed_glasses = np.array(Y_test_removed_glasses)
-    X_test_removed_glasses = np.array(X_test_removed_glasses)
-    X_test_features = np.array(X_test_features)
+        print("Strat feature extraction for B2 for training data")
+        features, sunglasses_images = eye_feature_extraction(train_images)
+        X_train_features = np.array([features[k] for k in features.keys()])
+        print(f"{len(sunglasses_images)} images with sunglsses have been found")
 
-    print("write the testing features without glasses to file")
-    outfile_features = open("x_test_features_removed_glasses_task_b2", 'wb')
-    pickle.dump(X_test_features, outfile_features)
-    outfile_features.close()
+        # remove outliers with glasses from raw data, feature data and labels
+        Y_train_removed_glasses = []
+        X_train_removed_glasses = []
+        for image in training_labels.keys():
+            if image not in sunglasses_images:
+                Y_train_removed_glasses.append(training_labels[image])
+                X_train_removed_glasses.append(train_images[image])
 
-    print("write the testing labels withou glasses to file")
-    outfile_features = open("x_test_removed_glasses_task_b2", 'wb')
-    pickle.dump(X_test_removed_glasses, outfile_features)
-    outfile_features.close()
+        # get the training data with glasses removed and feature exctraction as numpy array 
+        Y_train_removed_glasses = np.array(Y_train_removed_glasses)
+        X_train_removed_glasses = np.array(X_train_removed_glasses)
 
-    print("write the testing labels withou glasses to file")
-    outfile_features = open("y_test_removed_glasses_task_b2", 'wb')
-    pickle.dump(Y_test_removed_glasses, outfile_features)
-    outfile_features.close()
 
-    # FEATURE EXTRACTION FOR TASK B1 ------------------------------------------------
+        print("Strat feature extraction for B2 for testing data")
+        features, sunglasses_images = eye_feature_extraction(test_images)
+        X_test_features = np.array([features[k] for k in features.keys()])
+        print(f"{len(sunglasses_images)} images with sunglsses have been found")
 
-    # print("start feature extraction for training set")
-    # images, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(train_images)
-    # features = face_shape_feature_extraction(gray_images, landmarks_dict, no_faces_list)
-    
-    # print("write the features to file")
-    # outfile_features = open("train_features_task_b1", 'wb')
-    # pickle.dump(features, outfile_features)
-    # outfile_features.close()
+        # remove outliers with glasses from raw data, feature data and labels
+        Y_test_removed_glasses = []
+        X_test_removed_glasses = []
+        for image in testing_labels.keys():
+            if image not in sunglasses_images:
+                Y_test_removed_glasses.append(testing_labels[image])
+                X_test_removed_glasses.append(test_images[image])
 
-    # outfile_images = open("train_images_rgb", 'wb')
-    # pickle.dump(images, outfile_images)
-    # outfile_images.close()
+        # get the training data with glasses removed and feature exctraction as numpy array 
+        Y_test_removed_glasses = np.array(Y_test_removed_glasses)
+        X_test_removed_glasses = np.array(X_test_removed_glasses)
 
-    # outfile_images = open("train_images_gray", 'wb')
-    # pickle.dump(images, outfile_images)
-    # outfile_images.close()
+        return Y_train_removed_glasses, X_train_removed_glasses, X_train_features, Y_test_removed_glasses, X_test_removed_glasses, X_test_features
 
-    # print("start feature extraction for testing set")
-    # images, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(test_images)
-    # features = face_shape_feature_extraction(gray_images, landmarks_dict, no_faces_list)
-    # print("write the features to file")
-    # outfile_features = open("test_features_task_b1", 'wb')
-    # pickle.dump(features, outfile_features)
-    # outfile_features.close()
 
-    # outfile_images = open("test_images_rgb", 'wb')
-    # pickle.dump(images, outfile_images)
-    # outfile_images.close()
-
-    # outfile_images = open("test_images_gray", 'wb')
-    # pickle.dump(images, outfile_images)
-    # outfile_images.close()
-
-    return Y_test_labels, Y_train_labels
 
 
