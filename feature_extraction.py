@@ -155,7 +155,6 @@ def remove_sunglasses(image):
     glasses = False
     hist,bin = np.histogram(image.ravel(),256,[0,255]) 
     for i in range(0,30):
-        print(hist[i])
         if hist[i] > 2500:
             glasses = True
     return glasses
@@ -180,9 +179,10 @@ def get_average_side(landmarks_dict, no_faces_list ):
 def eye_feature_extraction(input_images):
     images, gray_images, landmarks_dict, no_faces_list = cartoon_face_detection(input_images)
     image_names = gray_images.keys()
-    features = dict.fromkeys(image_names)
+    features = {}
     features_gray = dict.fromkeys(image_names)
     sunglasses_images = []
+    image_shapes = []
     for img in image_names:
         if img in no_faces_list:
             top, bottom, left, right = get_average_side(landmarks_dict, no_faces_list)
@@ -191,12 +191,19 @@ def eye_feature_extraction(input_images):
             bottom = landmarks_dict[img][29][1]
             left = landmarks_dict[img][0][0]
             right = landmarks_dict[img][16][0]
-        features_gray[img] = gray_images[img][top:bottom,left:right]
+        cropped_img = gray_images[img][top:bottom,left:right]
+        image_shapes.append(cropped_img.shape)
+        features_gray[img] = cropped_img
         if remove_sunglasses(features_gray[img]):
             sunglasses_images.append(img)
         else:
-            features[img] = images[img][top:bottom,left:right]   
-
-
+            features[img] = images[img][top:bottom,left:right]  
+    resized_features  = {}
+    image_shapes = np.array(image_shapes)
+    max_h = max(image_shapes[:,0])
+    max_w = max(image_shapes[:,1])
+    print(f"images will be reshape to: {(max_h, max_w)}")
+    for img in features.keys():
+        resized_features[img] = cv2.resize(features[img],(max_w, max_h))
     
-    return features, sunglasses_images
+    return resized_features, sunglasses_images

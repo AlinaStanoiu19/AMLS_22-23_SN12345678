@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import cv2
 import pickle
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -14,21 +15,32 @@ def main():
     # Compute and save feature extraction as pkl file  for task B 
 
     # TASK B2: -----------------------------------------------------------------------------------------
-    Y_train_labels, X_train_images, X_train_features, Y_test_labels, X_test_images, X_test_features = get_data_b('eye_color')
+    # Y_train_labels, X_train_images, X_train_features, Y_test_labels, X_test_images, X_test_features = get_data_b('eye_color')  
 
-    save_as_pickle(Y_train_labels, 'y_train_labels_b2.pkl' )
-    save_as_pickle(X_train_images, 'x_train_images_b2.pkl' )
-    save_as_pickle(X_train_features, 'x_train_features_b2.pkl' )
-    save_as_pickle(Y_test_labels, 'y_test_labels_b2.pkl' )
-    save_as_pickle(X_test_images, 'x_test_images_b2.pkl' )
-    save_as_pickle(X_test_features, 'x_test_features_b2.pkl' )
+    # save_as_pickle(Y_train_labels, 'y_train_labels_b2.pkl' )
+    # # save_as_pickle(X_train_images, 'x_train_images_b2.pkl' )
+    # save_as_pickle(X_train_features, 'x_train_features_b2.pkl' )
+    # save_as_pickle(Y_test_labels, 'y_test_labels_b2.pkl' )
+    # # save_as_pickle(X_test_images, 'x_test_images_b2.pkl' )
+    # save_as_pickle(X_test_features, 'x_test_features_b2.pkl' )
+    Y_train_labels = pd.read_pickle('y_train_labels_b2.pkl')
+    X_train_features = pd.read_pickle('x_train_features_b2.pkl')
+    Y_test_labels = pd.read_pickle('y_test_labels_b2.pkl' )
+    X_test_features = pd.read_pickle('x_test_features_b2.pkl')
 
-    print("TASK B2. EYE COLOR DETECTION WITH RAW DATA ")
-    model_b1(Y_train_labels, Y_test_labels, X_test_images, X_train_images, 'b2_raw_data')
+    print(f"len of train: {len(Y_train_labels[:8100])} and len of test:  {len(Y_test_labels)} ")
+
+
+    # print("TASK B2. EYE COLOR DETECTION WITH RAW DATA ")
+    # model_b1(Y_train_labels, Y_test_labels, X_test_images, X_train_images, 'b2_raw_data')
 
     print("TASK B2. EYE COLOR DETECTION WITH FEATURES DATA ")
-    model_b1(Y_train_labels, Y_test_labels, X_test_features, X_train_features, 'b2_feature_data')
-    # -----------------------------------------------------------------------------------------------------
+    model_b1(Y_train_labels[:8100], Y_test_labels[:2025], X_test_features[:2025], X_train_features[:8100], 'b2_feature_data')
+
+    
+    # save_as_pickle(X_train_features, 'x_train_features_b2.pkl' )
+    # save_as_pickle(X_test_features, 'x_test_features_b2.pkl' )
+    # # -----------------------------------------------------------------------------------------------------
 
     # TASK B1:------------------------------------------------------------------------------------------------
     # Y_train_labels, X_train_images, X_train_features, Y_test_labels, X_test_images, X_test_features = get_data_b('face_shape')

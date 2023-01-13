@@ -147,11 +147,11 @@ def get_data_b(task):
         for image in training_labels.keys():
             if image not in sunglasses_images:
                 Y_train_removed_glasses.append(training_labels[image])
-                X_train_removed_glasses.append(train_images[image])
+                # X_train_removed_glasses.append(train_images[image])
 
         # get the training data with glasses removed and feature exctraction as numpy array 
         Y_train_removed_glasses = np.array(Y_train_removed_glasses)
-        X_train_removed_glasses = np.array(X_train_removed_glasses)
+        # X_train_removed_glasses = np.array(X_train_removed_glasses)
 
 
         print("Strat feature extraction for B2 for testing data")
@@ -165,11 +165,11 @@ def get_data_b(task):
         for image in testing_labels.keys():
             if image not in sunglasses_images:
                 Y_test_removed_glasses.append(testing_labels[image])
-                X_test_removed_glasses.append(test_images[image])
+                # X_test_removed_glasses.append(test_images[image])
 
         # get the training data with glasses removed and feature exctraction as numpy array 
         Y_test_removed_glasses = np.array(Y_test_removed_glasses)
-        X_test_removed_glasses = np.array(X_test_removed_glasses)
+        # X_test_removed_glasses = np.array(X_test_removed_glasses)
 
         return Y_train_removed_glasses, X_train_removed_glasses, X_train_features, Y_test_removed_glasses, X_test_removed_glasses, X_test_features
 
